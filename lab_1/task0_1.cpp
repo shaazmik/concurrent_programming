@@ -30,7 +30,7 @@
 
 int main(int argc, char* argv[])
 {
-    unsigned long long total_iterations = 10000000000; // Общее количество итераций
+    unsigned long long total_iterations = 1000000000; // Общее количество итераций
     unsigned long long i;
     int rank, size;
     double x, y, distance_squared, pi_estimate;

@@ -36,33 +36,28 @@ void* worker(void* arg) {
         Part p;
         data->global_has_task_mtx->lock();
 
-        // part of global stack.
         {
             const std::lock_guard< std::mutex> lock( *data->global_stk_mtx);
 
             p = data->global_stk->back();
             data->global_stk->pop_back();
 
-            // If more parts are present, allow other threads to get them.
             if (data->global_stk->size() != 0 )
             {
                 data->global_has_task_mtx->unlock();
             }
 
-            // If part is not terminating, add this thread to active.
             if ( p.a <= p.b )
             {
                 (*data->global_nactive)++;
             }
         }
 
-        // If part is terminating, terminate.
         if ( p.a > p.b )
         {
-            break;
+            break; // stop 
         }
 
-        // Perform local stack algorithm.
         double result = 0;
         while ( 1 )
         {
@@ -96,7 +91,6 @@ void* worker(void* arg) {
             {
                 const std::lock_guard< std::mutex> lock( *data->global_stk_mtx);
 
-                // Unload local stack to global.
                 while ( stk.size() > 1 )
                 {
                     data->global_stk->push_back( stk.back());
@@ -107,20 +101,16 @@ void* worker(void* arg) {
             }
         }
 
-        // Add partial result to global.
         {
 
             const std::lock_guard< std::mutex> lock( *data->global_result_mtx);
             *data->global_result += result;
         }
 
-        // Finalize part processing.
         {
             const std::lock_guard< std::mutex> lock( *data->global_stk_mtx);
-            // Remove this thread from active.
             (*data->global_nactive)--;
 
-            // Fill global stack with terminating parts.
             if ( *data->global_nactive == 0 && data->global_stk->size() == 0 )
             {
                 for ( int i = 0; i < data->thread_count; i++ )

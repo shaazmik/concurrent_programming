@@ -27,10 +27,10 @@ void* worker(void* arg) {
 }
 
 int main(int argc, char** argv) {
-    const int thread_count = 4;
-    double a = 0.001;
+    const int thread_count = 1;
+    double a = 0.000001;
     double b = 1.0; 
-    uint32_t steps = 1410065400; 
+    uint32_t steps = 100000000; 
     
     std::vector<ThreadData> data(thread_count);
     std::vector<pthread_t> threads(thread_count);

@@ -73,7 +73,7 @@ private:
         }
         halfStepSum *= halfStepSize;
 
-        double resultTask = std::abs(halfStepSum - fullStepSum) < 0.00001 ? fullStepSum : halfStepSum;
+        double resultTask = std::abs(halfStepSum - fullStepSum) < 1e-10 ? fullStepSum : halfStepSum;
 
         std::lock_guard<std::mutex> lock(mutex);
         result += resultTask;

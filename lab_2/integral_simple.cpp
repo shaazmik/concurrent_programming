@@ -49,7 +49,7 @@ int main(int argc, char** argv) {
         total_integral += data[i].result;
     }
 
-    std::cout.precision(17);
+    std::cout.precision(10);
     std::cout << "Integral is " << total_integral << std::endl;
 
     return 0;

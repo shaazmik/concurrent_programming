@@ -133,7 +133,7 @@ void* worker(void* arg) {
 }
 
 int main(int argc, char** argv) {
-    const int thread_count = 1;
+    const int thread_count = 4;
     double a = 0.001;
     double b = 1.0; 
     double epsilon = 1e-10;
@@ -165,7 +165,7 @@ int main(int argc, char** argv) {
         pthread_join(threads[rank], NULL);
     }
 
-    std::cout.precision(17);
+    std::cout.precision(10);
     std::cout << "Integral is " << global_result << std::endl;
     
     return 0;

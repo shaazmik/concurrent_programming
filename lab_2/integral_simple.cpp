@@ -28,7 +28,7 @@ void* worker(void* arg) {
 
 int main(int argc, char** argv) {
     const int thread_count = 1;
-    double a = 0.000001;
+    double a = 1e-8;
     double b = 1.0; 
     uint32_t steps = 100000000; 
     

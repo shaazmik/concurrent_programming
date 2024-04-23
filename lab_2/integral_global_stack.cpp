@@ -68,7 +68,7 @@ void* worker(void* arg) {
             double s_cb = (f_c + p.f_b) * (p.b - c) / 2;
             double s_acb = s_ac + s_cb;
 
-            if ( std::abs( p.s_ab - s_acb) > data->epsilon * std::abs( s_acb) )
+            if ( std::abs( p.s_ab - s_acb) > data->epsilon)
             {
                 stk.push_back( Part{ p.a, c, p.f_a, f_c, s_ac});
                 p.a = c;
@@ -124,7 +124,7 @@ void* worker(void* arg) {
 
 int main(int argc, char** argv) {
     const int thread_count = 4;
-    double a = 0.001;
+    double a = 1e-8;
     double b = 1.0; 
     double epsilon = 1e-10;
     double f_a = f(a);

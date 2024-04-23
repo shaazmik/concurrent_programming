@@ -81,7 +81,7 @@ private:
 };
 
 int main() {
-    IntegralSolver solver(0.001, 1.0, 100000000, 100);
+    IntegralSolver solver(1e-8, 1.0, 1000000000, 100);
     solver.start(4);
 
     std::cout.precision(10);

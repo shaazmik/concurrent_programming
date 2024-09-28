@@ -1,2 +1,6 @@
 omptest
 omptest.*
+simple
+parallel
+*.o
+.vscode

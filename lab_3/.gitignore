@@ -4,3 +4,4 @@ simple
 parallel
 *.o
 .vscode
+*.out

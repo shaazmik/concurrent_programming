@@ -6,14 +6,18 @@
 #include <stdio.h>
 #include <stdint.h>
 
+
 typedef struct _Matrix
 {
     uint32_t rows;
     uint32_t cols;
-    int *values;
+    uint32_t *values;
 } Matrix;
 
 #define MXY_NOT_POINTER_(M_, R_, C_) ((int(*)[M_.rows])(M_.values))[R_][C_]
+
+#define GET_VAL_FROM_MATRIX(mat, i, j) (mat->values[(i) * mat->cols + (j)])
+
 
 // mx as a pointer
 #define MXY(M_, R_, C_) MXY_NOT_POINTER_(((Matrix)*M_), R_, C_)
@@ -36,94 +40,23 @@ static inline void matrix_free(Matrix **ptr)
 
 #define matrix_autofree __attribute__((cleanup(matrix_free)))
 
-static inline Matrix* matrix_addition(Matrix *res, const Matrix *a, const Matrix *b)
-{
-    assert(res && a && b);
-    FOR(i, res->rows)
-    FOR(j, res->cols)
-    // res->values[i][j] = a->values[i][j] + b->values[i][j];
-    MXY(res, i, j) = MXY(a, i, j) + MXY(b, i, j);
 
-    return res;
-}
+Matrix* matrix_new(uint32_t rows, uint32_t cols);
+void matrix_print(const char *prompt, Matrix *mx);
 
-static inline Matrix* matrix_subtraction(Matrix *res, const Matrix *a, const Matrix *b)
-{
-    assert(res && a && b);
-    FOR(i, res->rows)
-    FOR(j, res->cols)
-    MXY(res, i, j) = MXY(a, i, j) - MXY(b, i, j);
+Matrix* matrix_ijk_matmul(Matrix* dest, const Matrix* srcA, const Matrix* srcB);
 
-    return res;
-}
+void matrix_foreach(Matrix *mx, Matrix *(*callback)(Matrix *, unsigned, unsigned));
 
-static inline int matrix_equal(const Matrix *a, const Matrix *b)
-{
-    assert(a && b);
+int matrix_equal(const Matrix *a, const Matrix *b);
+Matrix* matrix_addition(Matrix *res, const Matrix *a, const Matrix *b);
+Matrix* matrix_subtraction(Matrix *res, const Matrix *a, const Matrix *b);
+Matrix* submatrix(const Matrix* src, uint32_t row_start, uint32_t col_start, uint32_t size);
 
-    if (a->rows != b->rows)
-        return 0;
-    if (a->cols != b->cols)
-        return 0;
+void merge_submatrices(Matrix* dest, const Matrix* c11, const Matrix* c12, const Matrix* c21, const Matrix* c22);
 
-    FOR(i, a->rows)
-    FOR(j, a->cols)
-    if (MXY(a, i, j) != MXY(b, i, j))
-        return 0;
 
-    return 1;
-}
-
-static Matrix* matrix_ijk_matmul(Matrix *C, const Matrix *A, const Matrix *B)
-{
-    assert(A && B && C);
-    FOR(i, A->rows)
-    {
-        FOR(j, B->cols)
-        {
-            MXY(C, i, j) = 0;
-            FOR(k, A->cols)
-            {
-                MXY(C, i, j) += MXY(A, i, k) * MXY(B, k, j);
-            }
-        }
-    }
-    return C;
-}
-
-static inline Matrix* matrix_new(uint32_t rows, uint32_t cols)
-{
-    Matrix *matrix = calloc(1, sizeof(Matrix));
-    matrix->rows = rows;
-    matrix->cols = cols;
-    matrix->values = calloc(rows * cols, sizeof(int));
-    return matrix;
-}
-
-static void matrix_print(const char *prompt, Matrix *mx)
-{
-    assert(prompt && mx);
-    printf("%s\n", prompt);
-    FOR(i, mx->rows)
-    {
-        FOR(j, mx->cols)
-        {
-            printf(" %5d ", MXY(mx, i, j));
-        }
-        printf("\n");
-    }
-}
-
-static void inline matrix_foreach(Matrix *mx, Matrix *(*callback)(Matrix *, unsigned, unsigned))
-{
-    FOR(i, mx->rows)
-    {
-        FOR(j, mx->cols)
-        {
-            callback(mx, i, j);
-        }
-    }
-}
-
+Matrix* strassen_iterative(Matrix* dest,  Matrix* srcA,  Matrix* srcB, uint32_t rows);
+Matrix* strassen_omp(Matrix* dest, const Matrix* srcA, const Matrix* srcB, uint32_t rows);
 
 #endif /* MATRIX_H_ */
